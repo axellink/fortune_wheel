@@ -196,42 +196,52 @@
   .empty{color:var(--muted);font-size:13.5px;text-align:center;padding:22px 8px}
 
   /* ---------- history ---------- */
-  .history{display:flex;flex-direction:column;gap:6px;max-height:240px;overflow-y:auto}
+  .history{display:flex;flex-direction:column;gap:7px;max-height:min(58vh,440px);overflow-y:auto;padding-right:4px}
+  .history::-webkit-scrollbar{width:9px}
+  .history::-webkit-scrollbar-thumb{background:#2a3246;border-radius:9px;border:2px solid transparent;background-clip:padding-box}
   .hist{
-    display:flex;align-items:center;gap:9px;font-size:13px;color:var(--muted);
-    padding:6px 8px;border-radius:8px;background:rgba(255,255,255,.02);
+    display:flex;align-items:center;gap:11px;font-size:13.5px;color:var(--muted);
+    padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.022);
+    border:1px solid transparent;
   }
-  .hist .dot{width:8px;height:8px;border-radius:50%;flex:none}
+  .hist .dot{width:10px;height:10px;border-radius:50%;flex:none;box-shadow:0 0 0 3px rgba(255,255,255,.05)}
   .hist .lbl{color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .hist time{font-variant-numeric:tabular-nums;font-size:12px}
+  .hist .left{font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .hist .left.gone{color:#ffc24b}
+  .hist time{font-variant-numeric:tabular-nums;font-size:12px;white-space:nowrap;opacity:.8}
+  .hist.latest{
+    background:linear-gradient(90deg,rgba(124,92,255,.24),rgba(124,92,255,.04));
+    border-color:rgba(124,92,255,.5);
+    box-shadow:0 0 24px rgba(124,92,255,.13);
+    padding:13px 12px;
+  }
+  .hist.latest .lbl{color:#fff;font-weight:650;font-size:15px}
+  .hist.latest .dot{width:12px;height:12px;box-shadow:0 0 0 4px rgba(124,92,255,.2)}
+  .hist.fresh{animation:histin .55s cubic-bezier(.2,1.2,.4,1)}
+  @keyframes histin{from{transform:translateY(-10px) scale(.97);opacity:0}to{transform:none;opacity:1}}
 
-  /* ---------- result modal ---------- */
-  .overlay{
-    position:fixed;inset:0;z-index:50;display:none;
-    align-items:center;justify-content:center;padding:20px;
-    background:rgba(6,8,12,.72);backdrop-filter:blur(7px);
-    animation:fade .25s ease;
+  /* ---------- latest result ---------- */
+  .result-bar{
+    margin-top:20px;width:min(100%,460px);
+    display:flex;align-items:center;gap:14px;
+    border:1px solid var(--line);border-radius:14px;
+    padding:14px 16px;min-height:78px;
+    background:linear-gradient(135deg,rgba(124,92,255,.12),rgba(0,212,255,.045));
   }
-  .overlay.open{display:flex}
-  @keyframes fade{from{opacity:0}to{opacity:1}}
-  .result{
-    position:relative;z-index:2;width:min(420px,100%);text-align:center;
-    background:linear-gradient(180deg,var(--panel),#0d1118);
-    border:1px solid var(--line);border-radius:20px;padding:30px 26px 24px;
-    box-shadow:0 30px 80px rgba(0,0,0,.7);
-    animation:pop .4s cubic-bezier(.2,1.3,.4,1);
+  .result-bar.idle{
+    justify-content:center;text-align:center;color:var(--muted);font-size:13.5px;
+    background:rgba(255,255,255,.018);border-style:dashed;
   }
-  @keyframes pop{from{transform:scale(.85) translateY(14px);opacity:0}to{transform:none;opacity:1}}
-  .result .kicker{color:var(--muted);font-size:12px;letter-spacing:2px;text-transform:uppercase}
-  .result .prize{
-    font-size:clamp(26px,6vw,36px);font-weight:700;letter-spacing:-.5px;margin:10px 0 6px;
-    word-break:break-word;
-  }
-  .result .sub{color:var(--muted);font-size:14px;margin-bottom:22px}
-  .result .sub b{color:var(--text)}
-  .result .sub.gone{color:#ffc24b}
-  .result .actions{display:flex;gap:9px;justify-content:center;flex-wrap:wrap}
-  #confetti{position:fixed;inset:0;z-index:1;pointer-events:none}
+  .result-bar .bar{width:5px;align-self:stretch;border-radius:999px;flex:none;min-height:46px}
+  .result-bar .info{flex:1;min-width:0}
+  .result-bar .kicker{font-size:11px;letter-spacing:1.7px;text-transform:uppercase;color:var(--muted)}
+  .result-bar .prize{font-size:clamp(19px,4vw,25px);font-weight:700;letter-spacing:-.3px;margin-top:3px;overflow-wrap:anywhere}
+  .result-bar .left{font-size:13px;color:var(--muted);margin-top:3px}
+  .result-bar .left b{color:var(--text)}
+  .result-bar .left.gone{color:#ffc24b}
+  .result-bar.pop{animation:resultpop .55s cubic-bezier(.2,1.25,.4,1)}
+  @keyframes resultpop{from{transform:scale(.95);opacity:.35}to{transform:none;opacity:1}}
+  #confetti{position:fixed;inset:0;z-index:40;pointer-events:none}
 
   .foot{margin-top:18px;color:#5d6679;font-size:12px;text-align:center}
   .foot kbd{background:#191f2c;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 6px;font-size:11px;font-family:inherit;color:var(--muted)}
@@ -262,6 +272,7 @@
           <canvas id="wheel"></canvas>
           <button class="spin-btn" id="spin">Spin</button>
         </div>
+        <div class="result-bar idle" id="result">Spin the wheel — the result lands here and at the top of the history.</div>
         <div class="stage-meta">
           <span>On the wheel: <b id="m-active">0</b></span>
           <span>Total stock: <b id="m-stock">0</b></span>
@@ -304,19 +315,7 @@
   <p class="foot">Saved automatically in this browser · <kbd>Space</kbd> to spin</p>
 </div>
 
-<div class="overlay" id="overlay">
-  <canvas id="confetti"></canvas>
-  <div class="result">
-    <div class="kicker">The wheel has spoken</div>
-    <div class="prize" id="r-prize">—</div>
-    <div class="sub" id="r-sub"></div>
-    <div class="actions">
-      <button class="btn primary" id="r-again">Spin again</button>
-      <button class="btn" id="r-close">Close</button>
-      <button class="btn ghost" id="r-undo">Undo</button>
-    </div>
-  </div>
-</div>
+<canvas id="confetti"></canvas>
 
 <script>
 (function(){
@@ -365,7 +364,12 @@ function normalize(data){
       count: Math.max(0, Math.floor(Number(it.count) || 0)),
       color: /^#[0-9a-f]{6}$/i.test(it.color || "") ? it.color : PALETTE[i % PALETTE.length]
     })),
-    history: Array.isArray(data.history) ? data.history.slice(0,60) : [],
+    history: Array.isArray(data.history) ? data.history.slice(0,60).map(h => ({
+      label: String(h.label ?? ""),
+      color: /^#[0-9a-f]{6}$/i.test(h.color || "") ? h.color : PALETTE[0],
+      at: Number(h.at) || Date.now(),
+      remaining: typeof h.remaining === "number" ? h.remaining : null
+    })) : [],
     spins: Math.max(0, Math.floor(Number(data.spins) || 0)),
     weighted: !!data.weighted,
     sound: data.sound !== false
@@ -393,7 +397,7 @@ const ctx       = canvas.getContext("2d");
 const itemsEl   = $("#items");
 const historyEl = $("#history");
 const spinBtn   = $("#spin");
-const overlay   = $("#overlay");
+const resultEl  = $("#result");
 const confetti  = $("#confetti");
 const cctx      = confetti.getContext("2d");
 
@@ -681,34 +685,64 @@ function nudge(){
   );
 }
 
-let lastResult = null;   // { id, depleted, historyStamp } — for undo
+let lastResult = null;   // { id, entry } — backs the undo button
+let freshEntry = null;   // history entry that should animate in on the next render
 
 function settle(item){
   item.count = Math.max(0, item.count - 1);
   state.spins++;
-  const entry = { label: item.label, color: item.color, at: Date.now() };
+  const entry = { label: item.label, color: item.color, at: Date.now(), remaining: item.count };
   state.history.unshift(entry);
   state.history = state.history.slice(0, 60);
-  lastResult = { id: item.id, depleted: item.count === 0, entry };
+  lastResult = { id: item.id, entry };
   save();
 
+  freshEntry = entry;
   renderList();
   renderHistory();
   renderMeta();
   draw();
-
-  $("#r-prize").textContent = item.label;
-  const sub = $("#r-sub");
-  if(item.count === 0){
-    sub.className = "sub gone";
-    sub.innerHTML = "Last one — it just left the wheel. Add more in the items panel to bring it back.";
-  }else{
-    sub.className = "sub";
-    sub.innerHTML = `<b>${item.count}</b> left in stock.`;
-  }
-  overlay.classList.add("open");
+  showResult(entry, true);
   burst();
   fanfare();
+}
+
+/** Paint the banner under the wheel. `undoable` adds the undo button. */
+function showResult(entry, undoable){
+  resultEl.className = "result-bar pop";
+  resultEl.innerHTML = `<div class="bar"></div>
+    <div class="info">
+      <div class="kicker">Latest result</div>
+      <div class="prize"></div>
+      <div class="left"></div>
+    </div>`;
+  resultEl.querySelector(".bar").style.background = entry.color;
+  resultEl.querySelector(".prize").textContent = entry.label;
+
+  const left = resultEl.querySelector(".left");
+  if(entry.remaining === 0){
+    left.className = "left gone";
+    left.textContent = "Last one — off the wheel until you add more.";
+  }else if(typeof entry.remaining === "number"){
+    left.className = "left";
+    left.append(Object.assign(document.createElement("b"), {textContent: entry.remaining}), " left in stock.");
+  }else{
+    left.remove();
+  }
+
+  if(undoable){
+    const btn = document.createElement("button");
+    btn.className = "btn tiny ghost";
+    btn.textContent = "Undo";
+    btn.addEventListener("click", undo);
+    resultEl.appendChild(btn);
+  }
+  resultEl.addEventListener("animationend", () => resultEl.classList.remove("pop"), {once:true});
+}
+
+function clearResult(){
+  resultEl.className = "result-bar idle";
+  resultEl.textContent = "Spin the wheel — the result lands here and at the top of the history.";
 }
 
 function undo(){
@@ -720,8 +754,9 @@ function undo(){
   if(i > -1) state.history.splice(i, 1);
   lastResult = null;
   save();
-  closeOverlay();
   renderList(); renderHistory(); renderMeta(); draw();
+  if(state.history.length) showResult(state.history[0], false);
+  else clearResult();
 }
 
 /* ============================ confetti ============================ */
@@ -729,12 +764,14 @@ function undo(){
 let particles = [], confettiRAF = null;
 
 function burst(){
-  confetti.width = window.innerWidth;
-  confetti.height = window.innerHeight;
+  sizeConfetti();
+  const box = canvas.getBoundingClientRect();
+  const ox = box.left + box.width / 2;
+  const oy = box.top + box.height / 2;
   const colors = state.items.map(i => i.color).concat(PALETTE);
-  particles = Array.from({length: 120}, () => ({
-    x: window.innerWidth / 2 + (Math.random() - .5) * 160,
-    y: window.innerHeight / 2 + (Math.random() - .5) * 60,
+  particles = Array.from({length: 130}, () => ({
+    x: ox + (Math.random() - .5) * box.width * 0.35,
+    y: oy + (Math.random() - .5) * box.height * 0.2,
     vx: (Math.random() - .5) * 13,
     vy: -6 - Math.random() * 11,
     w: 5 + Math.random() * 7,
@@ -771,10 +808,9 @@ function confettiFrame(){
   else cctx.clearRect(0, 0, confetti.width, confetti.height);
 }
 
-function closeOverlay(){
-  overlay.classList.remove("open");
-  cancelAnimationFrame(confettiRAF);
-  cctx.clearRect(0, 0, confetti.width, confetti.height);
+function sizeConfetti(){
+  confetti.width = window.innerWidth;
+  confetti.height = window.innerHeight;
 }
 
 /* ============================ rendering: panels ============================ */
@@ -811,20 +847,33 @@ function renderHistory(){
   historyEl.innerHTML = "";
   if(state.history.length === 0){
     historyEl.innerHTML = '<div class="empty">No spins yet.</div>';
+    freshEntry = null;
     return;
   }
   const frag = document.createDocumentFragment();
-  state.history.forEach(h => {
+  state.history.forEach((h, i) => {
     const el = document.createElement("div");
-    el.className = "hist";
+    el.className = "hist"
+      + (i === 0 ? " latest" : "")
+      + (h === freshEntry ? " fresh" : "");
     const when = new Date(h.at);
-    el.innerHTML = `<span class="dot" style="background:${h.color}"></span>
+    el.innerHTML = `<span class="dot"></span>
       <span class="lbl"></span>
+      <span class="left"></span>
       <time>${when.toLocaleDateString(undefined,{month:"short",day:"numeric"})} ${when.toLocaleTimeString(undefined,{hour:"2-digit",minute:"2-digit"})}</time>`;
+    el.querySelector(".dot").style.background = h.color;
     el.querySelector(".lbl").textContent = h.label;
+    const left = el.querySelector(".left");
+    if(h.remaining === 0){
+      left.className = "left gone";
+      left.textContent = "sold out";
+    }else if(typeof h.remaining === "number"){
+      left.textContent = h.remaining + " left";
+    }
     frag.appendChild(el);
   });
   historyEl.appendChild(frag);
+  freshEntry = null;
 }
 
 function renderMeta(){
@@ -922,13 +971,15 @@ $("#opt-sound").addEventListener("change", e => { state.sound = e.target.checked
 
 $("#clear-history").addEventListener("click", () => {
   state.history = [];
-  save(); renderHistory();
+  lastResult = null;
+  save(); renderHistory(); clearResult();
 });
 
 $("#reset").addEventListener("click", () => {
   if(!confirm("Reset items, history and counters back to the defaults?")) return;
   state = defaultState();
-  save(); renderAll();
+  lastResult = null;
+  save(); renderAll(); clearResult();
 });
 
 $("#export").addEventListener("click", () => {
@@ -951,7 +1002,9 @@ $("#import").addEventListener("click", () => {
     reader.onload = () => {
       try{
         state = normalize(JSON.parse(String(reader.result)));
+        lastResult = null;
         save(); renderAll();
+        if(state.history.length) showResult(state.history[0], false); else clearResult();
       }catch(err){
         alert("That file could not be read as a Hazard Wheel export.");
       }
@@ -962,38 +1015,36 @@ $("#import").addEventListener("click", () => {
 });
 
 spinBtn.addEventListener("click", spin);
-$("#r-close").addEventListener("click", closeOverlay);
-$("#r-undo").addEventListener("click", undo);
-$("#r-again").addEventListener("click", () => { closeOverlay(); setTimeout(spin, 180); });
-overlay.addEventListener("click", e => { if(e.target === overlay) closeOverlay(); });
 
 document.addEventListener("keydown", e => {
-  if(e.key === "Escape" && overlay.classList.contains("open")) closeOverlay();
   if(e.code === "Space" && !/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)){
     e.preventDefault();
-    if(overlay.classList.contains("open")){ closeOverlay(); setTimeout(spin, 180); }
-    else spin();
+    spin();
   }
 });
 
 // keep multiple tabs of the same wheel in sync
 window.addEventListener("storage", e => {
   if(e.key !== STORE_KEY || spinning || !e.newValue) return;
-  try{ state = normalize(JSON.parse(e.newValue)); renderAll(); }catch(err){}
+  try{
+    state = normalize(JSON.parse(e.newValue));
+    lastResult = null;
+    renderAll();
+    if(state.history.length) showResult(state.history[0], false); else clearResult();
+  }catch(err){}
 });
 
 window.addEventListener("resize", () => {
   resize();
-  if(overlay.classList.contains("open")){
-    confetti.width = window.innerWidth;
-    confetti.height = window.innerHeight;
-  }
+  sizeConfetti();
 });
 
 /* ============================ boot ============================ */
 
 renderAll();
 resize();
+sizeConfetti();
+if(state.history.length) showResult(state.history[0], false);
 if(document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
 
 })();
